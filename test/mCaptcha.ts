@@ -59,6 +59,22 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   this.username = "aaronsw";
   this.password = "password";
 
+  //    login(this, browser);
+  this.siteKeyDescriptionBox = "input[name=description]";
+  this.averageTrafficBox = "input[name=avg_traffic]";
+  this.maxTrafficBox = "input[name=peak_sustainable_traffic]";
+  this.thresholdTrafficBox = "input[name=broke_my_site_traffic]";
+  this.siteKeyDescription = "create mcaptcha widget; the simple way";
+  this.averageTraffic = 500;
+  this.peakTraffic = 5_000;
+  this.thresholdTraffic = 50_000;
+  this.simpleSiteKeySubmitButton = ".sitekey-form__submit";
+
+  this.sitekeyFormWidgetLink = ".sitekey-form__widget-link";
+  this.sitekeyFormEditWidgetLink = ".sitekey-form__edit";
+
+  this.sitekeyFormDeleteWidgetLink = ".sitekey-form__delete";
+
   // callback can be a regular function as well as an arrow function.
   beforeEach(function (this: ExtendDescribeThis<CustomThis>, browser) {
     browser.navigateTo(this.mCaptchaUrl!);
@@ -99,17 +115,6 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   };
 
   it("create mCaptcha widget, the simple way", async (browser) => {
-    //    login(this, browser);
-    this.siteKeyDescriptionBox = "input[name=description]";
-    this.averageTrafficBox = "input[name=avg_traffic]";
-    this.maxTrafficBox = "input[name=peak_sustainable_traffic]";
-    this.thresholdTrafficBox = "input[name=broke_my_site_traffic]";
-    this.siteKeyDescription = "create mcaptcha widget; the simple way";
-    this.averageTraffic = 500;
-    this.peakTraffic = 5_000;
-    this.thresholdTraffic = 50_000;
-    this.simpleSiteKeySubmitButton = ".sitekey-form__submit";
-
     browser
       .click("button.taskbar__add-site")
       .assert.urlEquals("https://demo.mcaptcha.org/sitekeys/easy/add")
@@ -125,9 +130,6 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   });
 
   it("access simple widget and check if all states work", async (browser) => {
-    this.sitekeyFormWidgetLink = ".sitekey-form__widget-link";
-    this.sitekeyFormEditWidgetLink = ".sitekey-form__edit";
-
     browser
       .navigateTo(this.simpleCaptchaAboutUrl!)
       .assert.visible(".notification__title-text");
@@ -195,8 +197,6 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   });
 
   it("delete simple widget", async (browser) => {
-    this.sitekeyFormDeleteWidgetLink = ".sitekey-form__delete";
-
     browser
       .navigateTo(this.simpleCaptchaAboutUrl!)
       .assert.visible(".notification__title-text");
