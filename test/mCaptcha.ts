@@ -61,6 +61,10 @@ interface CustomThis {
   complexSitekeyDifficulty3: string;
 
   complexCaptchaAboutUrl: string;
+
+  registerUsernameWithoutEmaiUsernamel: string;
+  registerUsernameWithoutEmaiUsername2: string;
+  registerUsernameWithoutEmaiPassword: string;
 }
 
 // callback passed to `describe` should be a regular function (not an arrow function).
@@ -106,13 +110,87 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   this.complexSitekeyVisitor3 = "60";
   this.complexSitekeyDifficulty3 = "60";
 
+  this.registerUsernameWithoutEmaiUsernamel = "nightwatchtestuser1";
+  this.registerUsernameWithoutEmaiUsername2 = "nightwatchtestuser2";
+  this.registerUsernameWithoutEmaiPassword = "password";
+
   // callback can be a regular function as well as an arrow function.
   beforeEach(function (this: ExtendDescribeThis<CustomThis>, browser) {
     browser.navigateTo(this.mCaptchaUrl!);
   });
 
-  // no need to specify `this` parameter when passing an arrow function
-  // as callback to `it`.
+  it("register account without email, update username and delete account", async (browser) => {
+    browser
+      .waitForElementVisible(this.usernameBox!)
+      .click(".auth__secondary-action__link")
+      .waitForElementVisible("#password-check")
+      .sendKeys("#username", [this.registerUsernameWithoutEmaiUsernamel!])
+      .sendKeys(this.passwordBox!, [this.registerUsernameWithoutEmaiPassword!])
+      .sendKeys("#password-check", [this.registerUsernameWithoutEmaiPassword!])
+      .click(this.submitButton!)
+      .pause(1000)
+      .waitForElementVisible(this.usernameBox!)
+      .sendKeys(this.usernameBox!, [this.registerUsernameWithoutEmaiUsernamel!])
+      .sendKeys(this.passwordBox!, [this.registerUsernameWithoutEmaiPassword!])
+      .click(this.submitButton!)
+      .assert.visible(".help-text");
+
+    if (
+      (await browser.getCssProperty(".nav__hamburger-menu", "display")) !=
+      "none"
+    ) {
+      browser.click(".nav__hamburger-menu");
+    }
+
+    browser
+      .click(this.settingsCssSelector!)
+      .waitForElementVisible("#settings__username-form > button:nth-child(2)")
+      .click("#username")
+      .clearValue("#username")
+      .sendKeys("#username", this.registerUsernameWithoutEmaiUsername2!)
+      .click("#settings__username-form > button:nth-child(2)")
+      .pause(1000)
+      .waitForElementVisible("#settings__username-form > button:nth-child(2)")
+      .click("li.taskbar__action:nth-child(5) > a:nth-child(1)")
+      .waitForElementVisible(this.passwordBox!)
+      .sendKeys(this.usernameBox!, [this.registerUsernameWithoutEmaiUsername2!])
+      .sendKeys(this.passwordBox!, [this.registerUsernameWithoutEmaiPassword!])
+      .click(this.submitButton!)
+      .assert.visible(".help-text");
+
+    if (
+      (await browser.getCssProperty(".nav__hamburger-menu", "display")) !=
+      "none"
+    ) {
+      browser.click(".nav__hamburger-menu");
+    }
+
+    browser
+      .click(this.settingsCssSelector!)
+      .waitForElementVisible("#settings__username-form > button:nth-child(2)")
+      .click("#delete-account")
+      .pause(1000)
+      .acceptAlert()
+      .waitForElementVisible(this.passwordBox!)
+      .sendKeys(this.passwordBox!, [this.registerUsernameWithoutEmaiPassword!]);
+
+    browser.expect.element("#password").attribute("type").to.equal("password");
+    browser.expect.element(this.showPasswordImg!).to.be.visible;
+    browser.expect.element(this.hidePasswordImg!).not.be.visible;
+
+    browser.click(this.showPasswordButton!);
+    browser.expect.element(this.hidePasswordImg!).to.be.visible;
+    browser.expect.element(this.showPasswordImg!).not.be.visible;
+    browser.expect.element("#password").attribute("type").to.equal("text");
+
+    browser.click(this.showPasswordButton!);
+    browser.expect.element("#password").attribute("type").to.equal("password");
+    browser.expect.element(this.showPasswordImg!).to.be.visible;
+    browser.expect.element(this.hidePasswordImg!).not.be.visible;
+
+    browser.click(this.submitButton!).assert.visible(this.usernameBox!);
+  });
+
   it("fill username and password with demo credentials, verify show password works and try login", (browser) => {
     browser
       .waitForElementVisible(this.usernameBox!)
