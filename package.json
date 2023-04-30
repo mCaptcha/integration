@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test.firefox": "npx nightwatch ./test/mCaptcha.ts --env firefox",
+    "test.chrome": "npx nightwatch ./test/mCaptcha.ts --env chrome"
   },
   "keywords": [],
   "author": "",
