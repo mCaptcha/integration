@@ -70,7 +70,7 @@ interface CustomThis {
 
 // callback passed to `describe` should be a regular function (not an arrow function).
 describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis>) {
-  this.mCaptchaUrl = "https://demo.mcaptcha.org";
+  this.mCaptchaUrl = "http://localhost:7000";
   this.usernameBox = "input[name=login]";
   this.passwordBox = "input[name=password]";
   this.submitButton = "*[type=submit]";
@@ -297,7 +297,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   it("create mCaptcha widget, the simple way", async (browser) => {
     browser
       .click("button.taskbar__add-site")
-      .assert.urlEquals("https://demo.mcaptcha.org/sitekeys/easy/add")
+      .assert.urlEquals(`${this.mCaptchaUrl!}/sitekeys/easy/add`)
       .waitForElementVisible(this.averageTrafficBox!)
       .sendKeys(this.siteKeyDescriptionBox!, [this.siteKeyDescription!])
       .sendKeys(this.averageTrafficBox!, [this.averageTraffic!.toString()])
@@ -327,7 +327,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
       browser
         .switchWindow(allHandles[1])
         .assert.urlEquals(
-          `https://demo.mcaptcha.org${link.value?.toString()!}`
+          `${this.mCaptchaUrl!}${link.value?.toString()!}`
         );
 
       browser.closeWindow();
@@ -362,7 +362,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
 
     browser
       .click("button.taskbar__add-site")
-      .assert.urlEquals("https://demo.mcaptcha.org/sitekeys/easy/add")
+      .assert.urlEquals(`${this.mCaptchaUrl!}/sitekeys/easy/add`)
       .waitForElementVisible(this.averageTrafficBox!)
       .sendKeys(this.siteKeyDescriptionBox!, [this.siteKeyDescription!])
       .sendKeys(this.averageTrafficBox!, [
@@ -503,10 +503,10 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   it("create mCaptcha widget, the complex way", async (browser) => {
     this.complexCaptchaAboutUrl = await browser
       .click("button.taskbar__add-site")
-      .assert.urlEquals("https://demo.mcaptcha.org/sitekeys/easy/add")
+      .assert.urlEquals(`${this.mCaptchaUrl!}/sitekeys/easy/add`)
       .waitForElementVisible(this.averageTrafficBox!)
       .click(".sitekey-form__advance-options-link")
-      .assert.urlEquals("https://demo.mcaptcha.org/sitekeys/advance/add")
+      .assert.urlEquals(`${this.mCaptchaUrl!}/sitekeys/advance/add`)
       .sendKeys(this.siteKeyDescriptionBox!, [this.complexSitekeyDescription!])
       .clearValue("#duration")
       .sendKeys("#duration", [this.complexSitekeyDuration!])
@@ -603,7 +603,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
         await browser
           .switchWindow(allHandles[1])
           .assert.urlEquals(
-            `https://demo.mcaptcha.org${link.value?.toString()!}`
+            `${this.mCaptchaUrl!}${link.value?.toString()!}`
           )
           .pause(5000)
           .click("#widget__verification-checkbox")
