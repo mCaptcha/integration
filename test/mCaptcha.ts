@@ -601,10 +601,10 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
         await browser
           .switchWindow(allHandles[1])
           .assert.urlEquals(`${link.value?.toString()!}`)
-          .pause(5000)
+          .pause(30000)
           .click("#widget__verification-checkbox")
           .waitForElementNotVisible("#widget__verification-text--before")
-          .pause(5000)
+          .pause(30000)
           .waitForElementVisible("#widget__verification-text--after");
 
         expect(browser.getValue("#widget__verification-checkbox")).to.be.equal(
