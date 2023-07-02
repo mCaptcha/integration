@@ -326,7 +326,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
 
       browser
         .switchWindow(allHandles[1])
-        .assert.urlEquals(`${this.mCaptchaUrl!}${link.value?.toString()!}`);
+        .assert.urlEquals(`${link.value?.toString()!}`);
 
       browser.closeWindow();
 
@@ -600,7 +600,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
 
         await browser
           .switchWindow(allHandles[1])
-          .assert.urlEquals(`${this.mCaptchaUrl!}${link.value?.toString()!}`)
+          .assert.urlEquals(`${link.value?.toString()!}`)
           .pause(5000)
           .click("#widget__verification-checkbox")
           .waitForElementNotVisible("#widget__verification-text--before")
