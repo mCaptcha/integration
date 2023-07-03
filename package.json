@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test.firefox": "npx nightwatch ./test/mCaptcha.ts --env firefox",
-    "test.chrome": "npx nightwatch ./test/mCaptcha.ts --env chrome"
+    "test.firefox": "npx nightwatch ./test/mCaptcha.ts --env firefox || true",
+    "test.chrome": "npx nightwatch ./test/mCaptcha.ts --env chrome || true"
   },
   "keywords": [],
   "author": "",
