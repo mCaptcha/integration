@@ -37,6 +37,7 @@ interface CustomThis {
   peakTraffic: number;
   thresholdTraffic: number;
   simpleSiteKeySubmitButton: string;
+  anonPubStats: string;
 
   simpleCaptchaAboutUrl: string;
 
@@ -90,6 +91,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   this.peakTraffic = 5_000;
   this.thresholdTraffic = 50_000;
   this.simpleSiteKeySubmitButton = ".sitekey-form__submit";
+  this.anonPubStats = "#publish_benchmarks";
 
   this.sitekeyFormWidgetLink = ".sitekey-form__widget-link";
   this.sitekeyFormEditWidgetLink = ".sitekey-form__edit";
@@ -97,7 +99,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
   this.sitekeyFormDeleteWidgetLink = ".sitekey-form__delete";
 
   this.settingsCssSelector =
-    "li.secondary-menu__item:nth-child(3) > a:nth-child(1)";
+    "li.secondary-menu__item:nth-child(4) > a:nth-child(1)";
   this.settingsCopyBtnCssSelector = ".settings__secret-copy";
   this.updatedEmail = "updateEmail@foo.com";
   this.updatedEmail2 = "updateEmail2@foo.com";
@@ -520,6 +522,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
       .sendKeys("#difficulty3", [this.complexSitekeyDifficulty3!])
       .click("#add")
       .waitForElementVisible("#visitor4")
+      .click(this.anonPubStats!)
       .click(this.simpleSiteKeySubmitButton!)
       .assert.visible(".notification__title-text")
 
@@ -553,7 +556,7 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
     //      this.complexSitekeyDifficulty3!
     //    );
 
-    it("access edit simple widget and check if all states work", async (browser) => {
+    it("access edit complex widget and check if all states work", async (browser) => {
       browser
         .navigateTo(this.complexCaptchaAboutUrl!)
         .assert.visible(".notification__title-text");
@@ -567,6 +570,8 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
         .waitForElementNotPresent("#visitor3")
         .click(this.simpleSiteKeySubmitButton!)
         .assert.visible(".notification__title-text");
+
+      expect(browser.getValue(this.anonPubStats!)).to.be.equal("on");
 
       //      expect(browser.getValue(this.siteKeyDescriptionBox!)).to.be.equal(
       //        this.complexSitekeyDescription!
@@ -583,6 +588,27 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
       //      );
     });
 
+    it("play with PoW percentile page -- not enough records", async (browser) => {
+      let resultElement = ".sitekey__level-title > p:nth-child(1)";
+      browser
+        .click("li.secondary-menu__item:nth-child(3) > a:nth-child(1)")
+        .assert.urlEquals(`${this.mCaptchaUrl!}/utils/percentile`)
+        .clearValue("#time")
+        .clearValue("#percentile")
+        .assert.visible("#time")
+        .sendKeys("#time", "1")
+        .sendKeys("#percentile", "100")
+        .click(this.submitButton!)
+        .assert.visible(resultElement)
+        .assert.textContains(
+          resultElement,
+          "Not enough inputs to compute statistics. Please try again later"
+        );
+
+      expect(browser.getValue("#time")).to.be.equal("1");
+      expect(browser.getValue("#percentile")).to.be.equal("100.0");
+    });
+
     it("access complex widget and check if all states work", async (browser) => {
       browser
         .navigateTo(this.complexCaptchaAboutUrl!)
@@ -594,27 +620,46 @@ describe("mCaptcha login example", function (this: ExtendDescribeThis<CustomThis
 
       this.parent_window = await browser.windowHandle();
       browser.getAttribute("h1 a", "href", async (link) => {
-        browser.click(this.sitekeyFormWidgetLink!);
+        for (let i = 0; i < 4; i++) {
+          browser.click(this.sitekeyFormWidgetLink!);
 
-        const allHandles = await browser.windowHandles();
+          const allHandles = await browser.windowHandles();
+          await browser
+            .switchWindow(allHandles[1])
+            .assert.urlEquals(`${link.value?.toString()!}`);
 
-        await browser
-          .switchWindow(allHandles[1])
-          .assert.urlEquals(`${link.value?.toString()!}`)
-          .pause(30000)
-          .click("#widget__verification-checkbox")
-          .waitForElementNotVisible("#widget__verification-text--before")
-          .pause(30000)
-          .waitForElementVisible("#widget__verification-text--after");
+          await browser
+            .pause(30000)
+            .click("#widget__verification-checkbox")
+            .waitForElementNotVisible("#widget__verification-text--before")
+            .pause(30000)
+            .waitForElementVisible("#widget__verification-text--after");
+          expect(
+            browser.getValue("#widget__verification-checkbox")
+          ).to.be.equal("on");
 
-        expect(browser.getValue("#widget__verification-checkbox")).to.be.equal(
-          "on"
-        );
+          browser.closeWindow();
 
-        browser.closeWindow();
-
-        browser.switchWindow(this.parent_window!);
+          browser.switchWindow(this.parent_window!);
+        }
       });
+    });
+
+    it("play with PoW percentile page", async (browser) => {
+      let resultElement = ".sitekey__level-title > p:nth-child(1)";
+      browser
+        .click("li.secondary-menu__item:nth-child(3) > a:nth-child(1)")
+        .assert.urlEquals(`${this.mCaptchaUrl!}/utils/percentile`)
+        .clearValue("#time")
+        .clearValue("#percentile")
+        .sendKeys("#time", "40")
+        .sendKeys("#percentile", "99")
+        .click(this.submitButton!)
+        .assert.visible(resultElement)
+        .assert.textContains(resultElement, "Difficulty factor:");
+
+      expect(browser.getValue("#time")).to.be.equal("40");
+      expect(browser.getValue("#percentile")).to.be.equal("99.0");
     });
 
     it("delete complex widget", async (browser) => {
